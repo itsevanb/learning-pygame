@@ -27,17 +27,21 @@ snail_rect = snail_surface.get_rect(bottomright = (600, screen_height - ground_h
 
 player_surface = pygame.image.load('graphics/player_walk/p2_walk01.png').convert_alpha() # Load the image and convert it to a surface
 player_rect = player_surface.get_rect(midbottom = (80, screen_height - ground_height))
+player_gravity = 0
 
 while True:
     for event in pygame.event.get():    # Get all events
         if event.type == pygame.QUIT:   # If the event is quit
             pygame.quit()               # Quit pygame
             exit()                      # Quit python
-        #if event.type == pygame.MOUSEMOTION:
-            #if player_rect.collidepoint(event.pos): print('collision')
-        #if event.type == pygame.KEYDOWN:
-            #if event.key == pygame.K_SPACE:
-                #print('jump')
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if player_rect.collidepoint(event.pos):
+                player_gravity = -20
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player_gravity = -20
     
     screen.blit(sky_surface,(0,0))                                           # Draw the surface on the screen
     screen.blit(ground_surface,(0, screen_height - ground_height))         # Draw the surface on the screen
@@ -49,19 +53,11 @@ while True:
         snail_rect.left = screen_width
     snail_y_pos = player_rect.bottom - scaled_height            # adjusts snail position to player position
     screen.blit(snail_surface, snail_rect)                      # Draw the surface on the screen
+
+    #PLAYER MOVEMENT
+    player_gravity += 1
+    player_rect.y += player_gravity
     screen.blit(player_surface, player_rect)                    # Draw the surface on the screen
-
-    #keys = pygame.key.get_pressed()
-    #keys[pygame.K_SPACE]:
-    #print('jump')
-
-    #if player_rect.colliderect(snail_rect):                     #Checks if the snail and player collide
-        #print("Collision")
-
-    """ mos_pos = pygame.mouse.get_pos()                            # Get the mouse position
-    if player_rect.collidepoint(mos_pos):
-        print(pygame.mouse.get_pressed())   """                     # Get the mouse button pressed
-    
     
     
     # draw all elements
