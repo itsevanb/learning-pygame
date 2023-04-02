@@ -8,6 +8,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))  # Create a scre
 pygame.display.set_caption("Runner")  # Set the title of the window
 clock = pygame.time.Clock() # Create a clock object
 font = pygame.font.Font('font/Blox2.ttf', 50)   # Create a font object
+game_active = True
 
 sky_surface = pygame.image.load('graphics/sky.png').convert() # Load the image and convert it to a surface
 sky_surface = pygame.transform.scale(sky_surface, (screen_width, screen_height))
@@ -21,9 +22,9 @@ score_rect = text_surface.get_rect(center = (400, 50))
 
 snail_surface = pygame.image.load('graphics/snail.png').convert_alpha() # Load the image and convert it to a surface
 original_width, original_height = snail_surface.get_size()
-scaled_width, scaled_height = original_width * 2, original_height * 2
+scaled_width, scaled_height = original_width * 3, original_height * 3
 snail_surface = pygame.transform.scale(snail_surface, (scaled_width, scaled_height))
-snail_rect = snail_surface.get_rect(bottomright = (600, screen_height - ground_height))
+snail_rect = snail_surface.get_rect(bottomright = (700, screen_height - ground_height))
 
 player_surface = pygame.image.load('graphics/player_walk/p2_walk01.png').convert_alpha() # Load the image and convert it to a surface
 player_rect = player_surface.get_rect(midbottom = (80, screen_height - ground_height))
@@ -34,33 +35,47 @@ while True:
         if event.type == pygame.QUIT:   # If the event is quit
             pygame.quit()               # Quit pygame
             exit()                      # Quit python
-        
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if player_rect.collidepoint(event.pos):
-                player_gravity = -20
-        
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                player_gravity = -20
+        if game_active:
+            if event.type == pygame.MOUSEBUTTONDOWN and player_rect.bottom >= screen_height - ground_height:
+                if player_rect.collidepoint(event.pos):
+                    player_gravity = -20
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and player_rect.bottom >= screen_height - ground_height:
+                    player_gravity = -20
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                game_active = True
+                snail_rect.left = 800
     
-    screen.blit(sky_surface,(0,0))                                           # Draw the surface on the screen
-    screen.blit(ground_surface,(0, screen_height - ground_height))         # Draw the surface on the screen
-    pygame.draw.rect(screen, '#c0e8ec', score_rect)                            # Draw the surface on the screen
-    pygame.draw.rect(screen, '#c0e8ec', score_rect, 10)
-    screen.blit(text_surface, score_rect)                                   # Draw the surface on the screen
-    snail_rect.x -= 4
-    if snail_rect.right <= 0:
-        snail_rect.left = screen_width
-    snail_y_pos = player_rect.bottom - scaled_height            # adjusts snail position to player position
-    screen.blit(snail_surface, snail_rect)                      # Draw the surface on the screen
+        if game_active:
+            screen.blit(sky_surface,(0,0))                                           # Draw the surface on the screen
+            screen.blit(ground_surface,(0, screen_height - ground_height))         # Draw the surface on the screen
+            pygame.draw.rect(screen, '#c0e8ec', score_rect)                            # Draw the surface on the screen
+            pygame.draw.rect(screen, '#c0e8ec', score_rect, 10)
+            screen.blit(text_surface, score_rect)                                   # Draw the surface on the screen
+            snail_rect.x -= 4
+            if snail_rect.right <= 0:
+                snail_rect.left = screen_width
+            snail_y_pos = player_rect.bottom - scaled_height            # adjusts snail position to player position
+            screen.blit(snail_surface, snail_rect)                      # Draw the surface on the screen
 
-    #PLAYER MOVEMENT
-    player_gravity += 1
-    player_rect.y += player_gravity
-    screen.blit(player_surface, player_rect)                    # Draw the surface on the screen
-    
-    
-    # draw all elements
-    # update everything
-    pygame.display.update() # Update the screen
-    clock.tick(60)  # Set the framerate to 60 fps
+            #PLAYER MOVEMENT
+            player_gravity += 1
+            player_rect.y += player_gravity
+            if player_rect.bottom >= screen_height - ground_height:
+                player_rect.bottom = screen_height - ground_height
+                player_gravity = 0
+            screen.blit(player_surface, player_rect)                    # Draw the surface on the screen
+
+            #collision detection
+            if snail_rect.colliderect(player_rect):
+                game_active = False
+        else:
+            screen.fill((94,129,162))
+        
+        
+        # draw all elements
+        # update everything
+        pygame.display.update() # Update the screen
+        clock.tick(60)  # Set the framerate to 60 fps
