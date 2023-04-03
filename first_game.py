@@ -34,9 +34,10 @@ screen = pygame.display.set_mode((screen_width, screen_height))  # Create a scre
 pygame.display.set_caption("Runner")  # Set the title of the window
 clock = pygame.time.Clock() # Create a clock object
 font = pygame.font.Font('font/Blox2.ttf', 50)   # Create a font object
-game_active = True
+game_active = False
 start_time = 0 # Set the start time of the game
 score = 0
+
 
 sky_surface = pygame.image.load('graphics/sky.png').convert() # Load the image and convert it to a surface
 sky_surface = pygame.transform.scale(sky_surface, (screen_width, screen_height))
