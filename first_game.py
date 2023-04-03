@@ -20,6 +20,13 @@ def obstacle_move(obstacle_list):
     else:
         return []    
 
+def collision_check(player, obstacles):
+    if obstacles:
+        for obstacle_rect, obstacle_surf in obstacles:
+            if player.colliderect(obstacle_rect):
+                return False
+    return True
+
 pygame.init()   # Initialize pygame
 screen_width = 800
 screen_height = 400
@@ -122,11 +129,14 @@ while True:
         obstacle_rect_list = obstacle_move(obstacle_rect_list) # Move the obstacle
 
         #collision detection
-        if snail_rect.colliderect(player_rect):
-            game_active = False
+        game_active = collision_check(player_rect, obstacle_rect_list)
+
     else:
         screen.fill((94,129,162))
         screen.blit(player_stand, player_Stand_rect)
+        obstacle_rect_list.clear()
+        player_rect.midbottom = (80, screen_height - ground_height)
+        player_gravity = 0
 
         score_message = font.render(f'Your Score: {score}', False, (111, 196, 169))
         score_message_rect = score_message.get_rect(center = (400, 325))
